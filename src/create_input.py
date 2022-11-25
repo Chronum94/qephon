@@ -6,6 +6,7 @@ The following arguments are not implemented:
 import numpy as np
 import os
 import multimethod
+from pathlib import Path
 
 @multimethod
 def fortranformat(x: bool):
@@ -93,52 +94,27 @@ def write_ph_input(directory, infilename: str = 'phonon.in', require_valid_calcu
     require_valid_calculation: bool, optional
         If True, throws an error if a valid SCF calculation directory does not exist, by default True
     """
-    inputfile_name: str = directory / infilename
+    inputfile_name: str = Path(directory) / infilename
     if not os.path.exists(directory) and require_valid_calculation:
         raise FileNotFoundError(
             r"The calculation directory does not exist! \
             Make sure you have carried out a pw.x calculation before this, \
             and that the directory names are exactly equal."
         )
+    try:    
+        qpoints = kwargs.pop("qpoints")
+    except KeyError:
+        qpoints = None
+        pass
 
-    # with open(inputfile_name, "w") as fd:
-    #     fd.write("&inputph\n")
-    
-    qpoints = try: kwargs.pop("qpoints") except KeyError: pass
-        
-    input_nml = {"input": kwargs}
-    with open(infilename) as fd:
+    input_nml = f90nml.Namelist({"inputph": kwargs})
+    with open(infilename, 'w') as fd:
         input_nml.write(fd)
         
-        fd.write(f"{len(qpoints)}\n")
-        for q in qpoints:
-            fd.write(f"   {q[0]} {q[1]} {q[2]}  1\n")
-
-#         for key, value in kwargs.items():
-#             if type(key) == bool:
-#                 fd.write("=".join([key, bool_to_fortbool(value)]) + ",\n")
-
-#             if type(key) == float:
-#                 assert type(value) == float
-#                 fd.write("=".join([key, float_to_fortstring(value)]) + ",\n")
-
-#             if type(key) == int:
-#                 assert type(value) == int
-#                 fd.write(key + "=" + f"{value}" + ",\n")
-
-#             if key in str_keys:
-#                 assert type(value) == str
-#                 fd.write(key + "=" + f"'{value}'" + ",\n")
-
-#             if key in list_float_keys:
-#                 assert type(value) == list
-#                 for i, value in enumerate(value):
-#                     fd.write(
-#                         "=".join([key + f"({i+1})", float_to_fortstring(value)])
-#                         + ",\n"
-#                     )
-
-        fd.write("/\n")
+        if qpoints is not None:
+            fd.write(f"{len(qpoints)}\n")
+            for q in qpoints:
+                fd.write(f"   {q[0]} {q[1]} {q[2]}  1\n")
 
         
 def write_q2r_input(directory, inputname: str = 'iq2r.in', **kwargs):
