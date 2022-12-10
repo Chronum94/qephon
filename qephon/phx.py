@@ -1,8 +1,8 @@
 import subprocess
 from pathlib import Path
 
-
 from qephon.create_input import write_ph_input, write_q2r_input, write_matdyn_input, write_zg_input
+
 
 class EspressoPhononsProfile:
     def __init__(self, argv):
@@ -22,8 +22,8 @@ class EspressoPhonons:
         self.kwargs_dict = kwargs
     
     def run(self):
-        write_ph_input(directory=self.directory, infilename='iph.in', outfilename='oph.out', **self.kwargs_dict)
-        self.profile.run(self.directory, infilename, outfilename)
+        write_ph_input(directory=self.directory, infilename='iph.in', **self.kwargs_dict)
+        self.profile.run(self.directory, 'iph.in', 'oph.out')
 
     def final_diagonalize(self, diagonalize_profile=EspressoPhononsProfile(argv=['ph.x'])):
         diagonalize_profile.run(self.directory, 'iph.in', 'phdiag.out')

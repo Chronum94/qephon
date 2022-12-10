@@ -1,3 +1,3 @@
-from qephon.phx import EspressoPhonons
+from qephon.phx import EspressoPhonons, EspressoPhononsProfile
 
-__all__ = ['EspressoPhonons']
+__all__ = ['EspressoPhonons', 'EspressoPhononsProfile']

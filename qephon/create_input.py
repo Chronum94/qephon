@@ -6,6 +6,7 @@ The following arguments are not implemented:
 import numpy as np
 import os
 from pathlib import Path
+import f90nml
 
 # def write_ph_input(directory, infilename: str = 'phonon.in', require_valid_calculation: bool = True, **kwargs):
 #     """Writes a ph.x input file when using the .write() method.
@@ -65,6 +66,11 @@ from pathlib import Path
 #         except KeyError:
 #             pass
 
+def _write_single_namelist(fd, contents, toplevel_name):
+        input_nml = f90nml.Namelist({toplevel_name: contents})
+        input_nml.write(fd)
+
+
 
 def write_ph_input(directory, infilename: str = 'iph.in', require_valid_calculation: bool = True, **kwargs):
     """Writes a ph.x input file when using the .write() method.
@@ -92,10 +98,9 @@ def write_ph_input(directory, infilename: str = 'iph.in', require_valid_calculat
     except KeyError:
         qpoints = None
         pass
-
-    with open(infilename, 'w') as fd:
-        input_nml = f90nml.Namelist({"inputph": kwargs})
-        input_nml.write(fd)
+    
+    with open(inputfile_name, 'w') as fd:
+        _write_single_namelist(fd, kwargs, "inputph")
         
         if qpoints is not None:
             fd.write(f"{len(qpoints)}\n")
