@@ -5,21 +5,7 @@ The following arguments are not implemented:
 """
 import numpy as np
 import os
-import multimethod
 from pathlib import Path
-
-@multimethod
-def fortranformat(x: bool):
-    if x:
-        return ".true."
-    elif not x:
-        return ".false."
-    else:
-        raise Exception
-
-@multimethod
-def fortranformat(x: float):
-    return f"{x:0.07e}".replace("e", "d")
 
 # def write_ph_input(directory, infilename: str = 'phonon.in', require_valid_calculation: bool = True, **kwargs):
 #     """Writes a ph.x input file when using the .write() method.
@@ -80,7 +66,7 @@ def fortranformat(x: float):
 #             pass
 
 
-def write_ph_input(directory, infilename: str = 'phonon.in', require_valid_calculation: bool = True, **kwargs):
+def write_ph_input(directory, infilename: str = 'iph.in', require_valid_calculation: bool = True, **kwargs):
     """Writes a ph.x input file when using the .write() method.
     All input arguments except STRUCTURE types are supported,
     but the input sanitation/validation is currently weak.
@@ -99,7 +85,7 @@ def write_ph_input(directory, infilename: str = 'phonon.in', require_valid_calcu
         raise FileNotFoundError(
             r"The calculation directory does not exist! \
             Make sure you have carried out a pw.x calculation before this, \
-            and that the directory names are exactly equal."
+            and that the directory for the ph.x calculation points to this."
         )
     try:    
         qpoints = kwargs.pop("qpoints")
@@ -107,8 +93,8 @@ def write_ph_input(directory, infilename: str = 'phonon.in', require_valid_calcu
         qpoints = None
         pass
 
-    input_nml = f90nml.Namelist({"inputph": kwargs})
     with open(infilename, 'w') as fd:
+        input_nml = f90nml.Namelist({"inputph": kwargs})
         input_nml.write(fd)
         
         if qpoints is not None:
@@ -122,16 +108,9 @@ def write_q2r_input(directory, inputname: str = 'iq2r.in', **kwargs):
     print(inputfile_name)
 
     with open (inputfile_name, "w") as fd:
-        fd.write("&input\n")
-        
-        for key, value in kwargs.items():
-            if type(value) == bool:
-                fd.write("=".join([key, bool_to_fortbool(value)]) + ",\n")
-            
-            if type(value) == str:
-                fd.write(key + "=" + f"'{value}'" + ",\n")
-                
-        fd.write("/\n")
+        input_nml = f90nml.Namelist({"inputph": kwargs})
+        input_nml.write(fd)
+        # fd.write("/\n")
 
         
 def write_matdyn_input(directory, inputname: str = 'imdyn.in', **kwargs):

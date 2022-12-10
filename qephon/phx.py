@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 
 
-from ase.calculators.phx.create_input import write_ph_input, write_q2r_input, write_matdyn_input, write_zg_input
+from qephon.create_input import write_ph_input, write_q2r_input, write_matdyn_input, write_zg_input
 
 class EspressoPhononsProfile:
     def __init__(self, argv):
@@ -10,35 +10,10 @@ class EspressoPhononsProfile:
 
     def run(self, directory, inputfile, outputfile):
         from subprocess import check_call
+        import os
         argv = list(self.argv) + ['-in', str(inputfile)]
         with open(directory / outputfile, 'wb') as fd:
-            check_call(argv, stdout=fd, cwd=directory)
-
-
-# class EspressoPhononTemplate(CalculatorTemplate):
-#     def __init__(self):
-#         # super().__init__(
-#         #     'espresso',
-#         #     ['energy', 'free_energy', 'forces', 'stress', 'magmoms'])
-#         self.inputname = 'ph.in'
-#         self.outputname = 'ph.out'
-
-#     def write_input(self, directory, atoms, parameters, properties):
-#         directory.mkdir(exist_ok=True, parents=True)
-#         dst = directory / self.inputname
-#         write(dst, atoms, format='espresso-in', properties=properties,
-#               **parameters)
-
-#     def execute(self, directory, profile):
-#         profile.run(directory,
-#                     self.inputname,
-#                     self.outputname)
-
-#     def read_results(self, directory):
-#         path = directory / self.outputname
-#         atoms = read(path, format='espresso-out')
-#         return dict(atoms.calc.properties())
-
+            check_call(argv, stdout=fd, cwd=directory, env=os.environ)
 
 class EspressoPhonons:
     def __init__(self, profile: EspressoPhononsProfile, directory, **kwargs):
@@ -47,17 +22,15 @@ class EspressoPhonons:
         self.kwargs_dict = kwargs
     
     def run(self):
-        write_ph_input(directory=self.directory, infilename='ph.in', **self.kwargs_dict)
-        # subprocess.run(command, shell=True, cwd=self.directory)
-        # check_call(f"{self.profile.argv} -in {self.profile.}' '{phonon_dir}'",cwd="./")
-        self.profile.run(self.directory, 'ph.in', 'ph.out')
+        write_ph_input(directory=self.directory, infilename='iph.in', outfilename='oph.out', **self.kwargs_dict)
+        self.profile.run(self.directory, infilename, outfilename)
 
     def final_diagonalize(self, diagonalize_profile=EspressoPhononsProfile(argv=['ph.x'])):
-        diagonalize_profile.run(self.directory, 'ph.in', 'phdiag.out')
-        
+        diagonalize_profile.run(self.directory, 'iph.in', 'phdiag.out')
+
 
     @classmethod
-    def from_scf(cls, scf_dir, phonon_dir, profile, **kwargs):
+    def from_scf(cls, scf_dir, phonon_dir, profile, copy=True, **kwargs):
         """Initializes an EspressoPhonons object from scf and phonon
         and directories and ph.x inputs.
 
