@@ -98,7 +98,7 @@ def write_ph_input(directory, infilename: str = 'iph.in', require_valid_calculat
     except KeyError:
         qpoints = None
         pass
-    
+
     with open(inputfile_name, 'w') as fd:
         _write_single_namelist(fd, kwargs, "inputph")
         

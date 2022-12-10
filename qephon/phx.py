@@ -54,7 +54,8 @@ class EspressoPhonons:
         initialized_file_marker = phonon_dir / "SCFINIT"
         if not initialized_file_marker.exists():
             from subprocess import check_call
-            check_call(f"cp -r '{str(scf_dir)}/'* '{str(phonon_dir)}/'", shell=True, cwd="./")
+            if copy:
+                check_call(f"cp -r '{str(scf_dir)}/'* '{str(phonon_dir)}/'", shell=True, cwd="./")
             initialized_file_marker.touch()
         return cls(profile, phonon_dir, **kwargs)
 
