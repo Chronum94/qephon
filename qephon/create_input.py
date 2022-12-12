@@ -144,19 +144,22 @@ def write_zg_input(directory, inputname: str = 'izg.in', **kwargs):
     inputfile_name = directory / inputname
     print(inputfile_name)
     with open (inputfile_name, "w") as fd:
-        fd.write("&input\n")
+        input_nml = f90nml.Namelist({"input": kwargs})
+        input_nml.write(fd)
+#     with open (inputfile_name, "w") as fd:
+#         fd.write("&input\n")
         
-        for key, value in kwargs.items():
-            if type(value) == bool:
-                fd.write("=".join([key, bool_to_fortbool(value)]) + ",\n")
+#         for key, value in kwargs.items():
+#             if type(value) == bool:
+#                 fd.write("=".join([key, bool_to_fortbool(value)]) + ",\n")
                 
-            if type(value) == int:
-                fd.write("=".join([key, str(value)]) + ",\n")
+#             if type(value) == int:
+#                 fd.write("=".join([key, str(value)]) + ",\n")
             
-            if type(value) == str:
-                fd.write(key + "=" + f"'{value}'" + ",\n")
-            if type(value) == list:
-                for i, element in enumerate(value):
-                    fd.write(key + f"({i + 1})=" + f"'{element}'" + ",\n")
+#             if type(value) == str:
+#                 fd.write(key + "=" + f"'{value}'" + ",\n")
+#             if type(value) == list:
+#                 for i, element in enumerate(value):
+#                     fd.write(key + f"({i + 1})=" + f"'{element}'" + ",\n")
                 
-        fd.write(f"/\n")
+#         fd.write(f"/\n")
