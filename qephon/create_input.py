@@ -111,11 +111,9 @@ def write_ph_input(directory, infilename: str = 'iph.in', require_valid_calculat
 def write_q2r_input(directory, inputname: str = 'iq2r.in', **kwargs):
     inputfile_name = directory / inputname
     print(inputfile_name)
-
-    with open (inputfile_name, "w") as fd:
-        input_nml = f90nml.Namelist({"inputph": kwargs})
-        input_nml.write(fd)
-        # fd.write("/\n")
+    
+    with open(inputfile_name, 'w') as fd:
+        _write_single_namelist(fd, kwargs, "input")
 
         
 def write_matdyn_input(directory, inputname: str = 'imdyn.in', **kwargs):
