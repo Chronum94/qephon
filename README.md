@@ -1,5 +1,13 @@
 # qephon
 
+To install:
+
+```
+git clone https://github.com/Chronum94/qephon.git
+cd qephon
+poetry install
+```
+
 This package provides a thin [ASE](https://gitlab.com/ase/ase/)-like wrapper around Quantum Espresso's `ph.x` executable.
 
 ```python
