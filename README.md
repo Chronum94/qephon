@@ -25,3 +25,9 @@ ph.run()
 # Run the line below if you've used image parallelism in the ph.x call.
 # ph.final_diagonalize()
 ```
+
+TODO:
+
+- [ ] EPW support.
+- [ ] Robustness wrappers: Rerun calculation upon failure with updated parameters.
+- [ ] Phonopy/FHI-Vibes compatibility.
