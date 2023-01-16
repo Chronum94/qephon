@@ -31,3 +31,5 @@ TODO:
 - [ ] EPW support.
 - [ ] Robustness wrappers: Rerun calculation upon failure with updated parameters.
 - [ ] Phonopy/FHI-Vibes compatibility.
+- [ ] SSCHA data preparation and setup.
+- [ ] (Bit of a stretch) sensitivity analysis by recalculating phonons vs chosen parameters.
